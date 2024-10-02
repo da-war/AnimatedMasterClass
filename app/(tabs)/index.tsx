@@ -1,26 +1,47 @@
-import { Button, View } from "react-native";
-import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
+import { Button, View, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+} from "react-native-reanimated";
+import { Svg, Circle } from "react-native-svg";
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function App() {
-  const width = useSharedValue(100);
+  const r = useSharedValue<number>(20);
 
   const handlePress = () => {
-    width.value = withSpring(width.value + 10);
+    r.value += 10;
   };
 
+  const animatedProps = useAnimatedProps(() => ({
+    r: withTiming(r.value),
+  }));
+
   return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    >
-      <Animated.View
-        style={{
-          width,
-          height: 100,
-          backgroundColor: "violet",
-        }}
-      />
+    <View style={styles.container}>
+      <Svg style={styles.svg}>
+        <AnimatedCircle
+          cx="50%"
+          cy="50%"
+          fill="#b58df1"
+          animatedProps={animatedProps}
+        />
+      </Svg>
       <Button onPress={handlePress} title="Click me" />
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+  },
+  svg: {
+    height: 250,
+    width: "100%",
+  },
+});
